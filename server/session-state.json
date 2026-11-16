@@ -1,0 +1,1 @@
+{"status":"configured","backendPort":5001,"frontendPort":5173,"api":"http://localhost:5001/api","frontendUrl":"http://localhost:5173"}

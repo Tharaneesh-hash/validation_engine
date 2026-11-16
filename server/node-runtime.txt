@@ -1,0 +1,3 @@
+Node path: C:\Program Files\nodejs\node.exe
+Server port: 5001
+Health URL: http://localhost:5001/api/health

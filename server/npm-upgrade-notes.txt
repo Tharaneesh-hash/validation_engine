@@ -1,0 +1,1 @@
+Node.js was not available on PATH in this environment, so all commands were run using the local install under C:\Program Files\nodejs.

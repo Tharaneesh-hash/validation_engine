@@ -1,0 +1,4 @@
+# One more check
+
+- Frontend: http://localhost:5173
+- Backend health: http://localhost:5001/api/health

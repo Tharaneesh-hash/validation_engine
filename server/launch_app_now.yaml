@@ -1,0 +1,9 @@
+backend:
+  command: C:\Program Files\nodejs\node.exe server.js
+  env:
+    PORT: 5001
+    NODE_ENV: development
+    MONGODB_URI: mongodb://127.0.0.1:27017/validation_engine
+frontend:
+  command: C:\Program Files\nodejs\npm.cmd run dev -- --host 0.0.0.0
+  url: http://localhost:5173

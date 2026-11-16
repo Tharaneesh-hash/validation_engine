@@ -1,0 +1,1 @@
+The project is configured to launch locally. Backend port: 5001. Frontend port: 5173. API: http://localhost:5001/api.

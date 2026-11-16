@@ -1,0 +1,4 @@
+C:\Program Files\nodejs\npm.cmd install --prefix server
+C:\Program Files\nodejs\npm.cmd install --prefix client
+C:\Program Files\nodejs\npm.cmd test --prefix server
+C:\Program Files\nodejs\node.exe server.js

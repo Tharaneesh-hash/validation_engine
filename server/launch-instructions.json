@@ -1,0 +1,1 @@
+{"backend":"C:\\Program Files\\nodejs\\node.exe server.js","frontend":"C:\\Program Files\\nodejs\\npm.cmd run dev -- --host 0.0.0.0","api":"http://localhost:5001/api","frontendUrl":"http://localhost:5173"}

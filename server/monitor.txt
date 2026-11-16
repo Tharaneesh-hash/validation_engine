@@ -1,0 +1,1 @@
+Local monitoring file created to confirm the backend can be checked with quick-health.js.

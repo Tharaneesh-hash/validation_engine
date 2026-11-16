@@ -1,0 +1,5 @@
+{
+  "backend": "run_backend_local.cmd",
+  "frontend": "..\\client\\start_client.cmd",
+  "url": "http://localhost:5173"
+}

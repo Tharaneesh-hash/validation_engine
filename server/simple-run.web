@@ -1,0 +1,3 @@
+backend port 5001
+frontend port 5173
+health http://localhost:5001/api/health

@@ -1,0 +1,6 @@
+backend:
+  port: 5001
+  health: http://localhost:5001/api/health
+frontend:
+  port: 5173
+  url: http://localhost:5173

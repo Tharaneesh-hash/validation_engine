@@ -1,0 +1,1 @@
+Starting backend on 5001 and frontend on 5173. Open http://localhost:5173 when the dev server is ready.

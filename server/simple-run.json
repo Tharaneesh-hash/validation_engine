@@ -1,0 +1,1 @@
+{"backendPort":5001,"frontendPort":5173,"health":"http://localhost:5001/api/health"}

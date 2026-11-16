@@ -1,0 +1,1 @@
+Environment configured for local backend port 5001 and frontend port 5173.

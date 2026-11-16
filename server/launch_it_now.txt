@@ -1,0 +1,1 @@
+Start with run_project.cmd and open http://localhost:5173.

@@ -1,0 +1,1 @@
+Launcher is ready: run_local_app.cmd

@@ -1,0 +1,1 @@
+{"backend":{"cwd":"C:\\Users\\Tharaneesh.k\\Downloads\\Validation_engine\\server","command":"node server.js","port":5001},"frontend":{"cwd":"C:\\Users\\Tharaneesh.k\\Downloads\\Validation_engine\\client","command":"npm run dev -- --host 0.0.0.0","port":5173}}

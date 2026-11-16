@@ -1,0 +1,5 @@
+Node binary: C:\Program Files\nodejs\node.exe
+npm: C:\Program Files\nodejs\npm.cmd
+Server port: 5001
+Frontend URL: http://localhost:5173
+API URL: http://localhost:5001/api

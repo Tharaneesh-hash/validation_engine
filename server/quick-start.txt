@@ -1,0 +1,6 @@
+Use the backend launcher in this folder:
+- run_backend_local.ps1
+- run_backend_local.cmd
+Frontend launcher:
+- ..\client\start_client.ps1
+- ..\client\start_client.cmd

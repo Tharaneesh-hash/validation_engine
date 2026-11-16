@@ -1,0 +1,1 @@
+Backend and frontend commands are ready to launch from the project root.

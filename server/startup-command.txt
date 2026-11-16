@@ -1,0 +1,3 @@
+C:\Program Files\nodejs\node.exe server.js
+Environment: PORT=5001, NODE_ENV=development, MONGODB_URI=mongodb://127.0.0.1:27017/validation_engine
+Working directory: C:\Users\Tharaneesh.k\Downloads\Validation_engine\server

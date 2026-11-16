@@ -1,0 +1,1 @@
+Project is ready to launch from the root folder with run_project.cmd.

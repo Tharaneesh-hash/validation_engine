@@ -1,0 +1,1 @@
+Configured and ready for a local app launch using Node.js from C:\Program Files\nodejs. Backend uses port 5001, frontend uses port 5173.

@@ -1,0 +1,2 @@
+Frontend path: C:\Program Files\nodejs\npm.cmd
+Dev server URL: http://localhost:5173

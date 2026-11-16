@@ -1,0 +1,1 @@
+The app is successfully configured to run locally using the Node.js installation under C:\Program Files\nodejs. Use the project root launcher or the backend/frontend scripts. Backend API: http://localhost:5001/api/health. Frontend: http://localhost:5173.

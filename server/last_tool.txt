@@ -1,0 +1,1 @@
+The app is prepared and ready to launch using run_project.cmd.
