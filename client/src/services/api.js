@@ -1,9 +1,12 @@
 import axios from 'axios';
 
-// Create central Axios instance
+// Create central Axios instance with trailing slash normalization
+const rawBaseURL = import.meta.env.VITE_API_URL || '/api';
+const baseURL = rawBaseURL.replace(/\/+$/, '');
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
-  timeout: 10000,
+  baseURL,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json'
   }

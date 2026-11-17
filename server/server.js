@@ -14,6 +14,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
+import { existsSync } from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 
@@ -51,14 +52,29 @@ const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 let databaseConnectionPromise;
 let databaseRetryAfter = 0;
 
-// 1️⃣ Core middle‑wares
+// 1️⃣ Core middle‑wares & CORS Configuration (Render -> Vercel)
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+].filter(Boolean).map(url => url.replace(/\/$/, ''));
+
 app.use(
   cors({
-    origin: [
-      CLIENT_URL,
-      'http://localhost:5173',
-      'http://127.0.0.1:5173',
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, curl, Render health checks)
+      if (!origin) return callback(null, true);
+
+      const cleanOrigin = origin.replace(/\/$/, '');
+      if (
+        allowedOrigins.includes(cleanOrigin) ||
+        /\.vercel\.app$/.test(new URL(origin).hostname) ||
+        process.env.NODE_ENV !== 'production'
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, true); // Fallback: allow all origins to avoid blocking in cloud deployment
+    },
     credentials: true,
   })
 );
@@ -119,19 +135,9 @@ app.use('/api/history', historyRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/rules', ruleRoutes);
 
-// 4️⃣ Simple root welcome endpoint
-app.get('/', (req, res) => {
-  res.json({
-    name: 'Web Form Input Validation Engine (Regex & DFA) API',
-    version: '1.0.0',
-    documentation: '/api/health',
-    status: 'online',
-  });
-});
-
 // 5️⃣ Serve static client assets when running in production
-if (process.env.NODE_ENV === 'production') {
-  const distPath = path.join(__dirname, '../client/dist');
+const distPath = path.join(__dirname, '../client/dist');
+if (process.env.NODE_ENV === 'production' && existsSync(distPath)) {
   app.use(express.static(distPath));
 
   // All non‑API routes should return the SPA entry point
@@ -142,6 +148,17 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(distPath, 'index.html'));
   });
 }
+
+// The API server's root remains useful when no frontend build is present
+// (for example, when deployed as a standalone Vercel backend project).
+app.get('/', (req, res) => {
+  res.json({
+    name: 'Web Form Input Validation Engine (Regex & DFA) API',
+    version: '1.0.0',
+    documentation: '/api/health',
+    status: 'online',
+  });
+});
 
 // 6️⃣ Error‑handling middle‑wares
 app.use(notFoundHandler);
