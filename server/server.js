@@ -1,12 +1,28 @@
+/**
+ * Validation Engine – Express backend
+ * -------------------------------------------------
+ * This file now **exports** the Express app without starting
+ * an HTTP server when it is imported (required for Vercel
+ * server‑less functions). When you run it directly with
+ * `node server.js` (local development) it will still start
+ * listening on the configured port.
+ * -------------------------------------------------
+ */
+
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
+import mongoose from 'mongoose';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
+
+// DB & middleware imports
 import { connectDB } from './utils/db.js';
 import { networkTrackerMiddleware } from './middleware/networkTracker.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
+
+// Route imports
 import healthRoutes from './routes/healthRoutes.js';
 import validationRoutes from './routes/validationRoutes.js';
 import regexRoutes from './routes/regexRoutes.js';
@@ -15,31 +31,86 @@ import historyRoutes from './routes/historyRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import ruleRoutes from './routes/ruleRoutes.js';
 
+// ------------------------------------------------------------------
+// Load environment variables (Vercel injects them automatically)
+// ------------------------------------------------------------------
 dotenv.config();
 
+// ------------------------------------------------------------------
+// Basic path helpers (needed for serving the static client in prod)
+// ------------------------------------------------------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// ------------------------------------------------------------------
+// Express app setup
+// ------------------------------------------------------------------
 const app = express();
 const PORT = process.env.PORT || 5000;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+let databaseConnectionPromise;
+let databaseRetryAfter = 0;
 
-// 1. Core Middlewares
-app.use(cors({
-  origin: [CLIENT_URL, 'http://localhost:5173', 'http://127.0.0.1:5173'],
-  credentials: true
-}));
-
+// 1️⃣ Core middle‑wares
+app.use(
+  cors({
+    origin: [
+      CLIENT_URL,
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
-// 2. Logging and Computer Networks Monitoring Middleware
+// 2️⃣ Logging & network‑tracking
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
 }
 app.use(networkTrackerMiddleware);
 
-// 3. Mount Routes
+// Vercel imports this module instead of running the local startup block below.
+// Connect lazily for routes that use MongoDB, while preserving the in-memory
+// fallback when no database URI is configured or MongoDB is temporarily down.
+const ensureDatabaseConnection = async (req, res, next) => {
+  if (
+    process.env.NODE_ENV === 'test'
+    || !process.env.MONGODB_URI
+    || mongoose.connection.readyState === 1
+  ) {
+    return next();
+  }
+
+  if (Date.now() < databaseRetryAfter) {
+    return next();
+  }
+
+  if (!databaseConnectionPromise) {
+    databaseConnectionPromise = connectDB()
+      .then((connected) => {
+        if (!connected) databaseRetryAfter = Date.now() + 30_000;
+      })
+      .finally(() => {
+        databaseConnectionPromise = undefined;
+      });
+  }
+
+  try {
+    await databaseConnectionPromise;
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+};
+
+app.use(
+  ['/api/validate', '/api/history', '/api/analytics', '/api/rules'],
+  ensureDatabaseConnection
+);
+
+// 3️⃣ Mount API routes (all under /api)
 app.use('/api/health', healthRoutes);
 app.use('/api/validate', validationRoutes);
 app.use('/api/regex', regexRoutes);
@@ -48,44 +119,59 @@ app.use('/api/history', historyRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/rules', ruleRoutes);
 
-// Root Welcome Endpoint
+// 4️⃣ Simple root welcome endpoint
 app.get('/', (req, res) => {
   res.json({
     name: 'Web Form Input Validation Engine (Regex & DFA) API',
     version: '1.0.0',
     documentation: '/api/health',
-    status: 'online'
+    status: 'online',
   });
 });
 
-// Serve static frontend assets in production
+// 5️⃣ Serve static client assets when running in production
 if (process.env.NODE_ENV === 'production') {
   const distPath = path.join(__dirname, '../client/dist');
   app.use(express.static(distPath));
+
+  // All non‑API routes should return the SPA entry point
   app.get('*', (req, res, next) => {
     if (req.originalUrl.startsWith('/api')) {
-      return next();
+      return next(); // let the API router handle it
     }
     res.sendFile(path.join(distPath, 'index.html'));
   });
 }
 
-// 4. Error Handling Middlewares
+// 6️⃣ Error‑handling middle‑wares
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-// 5. Server Initialization
-if (process.env.NODE_ENV !== 'test') {
-  // Connect to Database
-  connectDB();
+// ------------------------------------------------------------------
+// Server start – only when this file is executed directly
+// (i.e. `node server.js`). When Vercel imports the file it will
+// skip this block and just use the exported Express app.
+// ------------------------------------------------------------------
+const isDirectExecution = process.argv[1]
+  && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
 
-  app.listen(PORT, () => {
-    console.log(`====================================================`);
-    console.log(`🚀 Validation Engine Server running on port: ${PORT}`);
-    console.log(`📡 Health Check: http://localhost:${PORT}/api/health`);
-    console.log(`🌐 Client Origin: ${CLIENT_URL}`);
-    console.log(`====================================================`);
+if (isDirectExecution && process.env.NODE_ENV !== 'test') {
+  const startServer = async () => {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log('====================================================');
+      console.log(`🚀 Validation Engine Server running on port: ${PORT}`);
+      console.log(`📡 Health Check: http://localhost:${PORT}/api/health`);
+      console.log(`🌐 Client Origin: ${CLIENT_URL}`);
+      console.log('====================================================');
+    });
+  };
+
+  startServer().catch((error) => {
+    console.error('Failed to start the validation engine server:', error);
+    process.exitCode = 1;
   });
 }
 
+// Export the app for Vercel’s server‑less wrapper
 export default app;
