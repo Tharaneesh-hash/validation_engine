@@ -62,6 +62,16 @@ git push -u origin main
    - `MONGODB_URI` = `<your-mongodb-atlas-uri>`
 5. Click **Create Web Service**. Render will automatically build the client and start the server.
 
+## Deploying the frontend to Vercel
+
+The repository root contains the `vercel.json` configuration. It installs the client dependencies, builds the Vite app in `client/`, and publishes `client/dist/` so the Vercel project serves the actual website instead of an empty repository root.
+
+1. Import the repository into Vercel and leave **Root Directory** set to the repository root (the folder containing `vercel.json`).
+2. Let the checked-in `vercel.json` provide the build command and output directory. If the Vercel project has dashboard overrides for either value, clear those overrides so they do not replace the checked-in settings.
+3. Deploy the project. The frontend will be available at the deployment's root URL.
+
+The backend is a separate Express app in `server/`; deploying only the frontend does not deploy the API. Deploy `server/` as a separate Vercel project with its **Root Directory** set to `server`, then set `VITE_API_URL` in the frontend project's environment variables to `https://<backend-domain>/api` and redeploy the frontend. Set `CLIENT_URL` in the backend project to the frontend's exact Vercel URL. Database-backed features also require a reachable MongoDB instance configured with `MONGODB_URI`.
+
 ---
 
 ## 3. Environment Variables Reference
