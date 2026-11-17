@@ -106,7 +106,7 @@ const ensureDatabaseConnection = async (req, res, next) => {
   if (!databaseConnectionPromise) {
     databaseConnectionPromise = connectDB()
       .then((connected) => {
-        if (!connected) databaseRetryAfter = Date.now() + 30_000;
+        if (!connected) databaseRetryAfter = Date.now() + 10_000;
       })
       .finally(() => {
         databaseConnectionPromise = undefined;
@@ -122,7 +122,7 @@ const ensureDatabaseConnection = async (req, res, next) => {
 };
 
 app.use(
-  ['/api/validate', '/api/history', '/api/analytics', '/api/rules'],
+  ['/api/health', '/api/validate', '/api/history', '/api/analytics', '/api/rules'],
   ensureDatabaseConnection
 );
 
