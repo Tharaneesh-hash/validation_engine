@@ -1,21 +1,44 @@
 import mongoose from 'mongoose';
 import dns from 'dns';
 
-// Ensure standard public DNS resolver for MongoDB Atlas SRV lookups
+// Ensure public DNS resolver for MongoDB Atlas SRV lookups across all environments
 try {
   dns.setServers(['8.8.8.8', '1.1.1.1']);
 } catch {
-  // Ignore in environments where setServers is restricted
+  // Ignore in environments where custom DNS servers are restricted
 }
 
 let lastConnectionError = null;
 
+/**
+ * Constructs and sanitizes the MongoDB connection URI, ensuring
+ * proper URL encoding for credentials with special characters.
+ */
+export const getCleanMongoURI = () => {
+  let uri = process.env.MONGODB_URI || process.env.MONGO_URI || '';
+  const username = process.env.MONGODB_USERNAME;
+  const password = process.env.MONGODB_PASSWORD;
+
+  if (username && password && uri) {
+    const encodedUser = encodeURIComponent(username.trim());
+    const encodedPass = encodeURIComponent(password.trim());
+
+    if (uri.includes('<username>') || uri.includes('<password>')) {
+      uri = uri.replace('<username>', encodedUser).replace('<password>', encodedPass);
+    }
+  }
+
+  // Fallback to local MongoDB for development
+  return uri || 'mongodb://127.0.0.1:27017/validation_engine';
+};
+
 export const connectDB = async () => {
-  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/validation_engine';
-  
+  const uri = getCleanMongoURI();
+
   try {
     const conn = await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds instead of hanging
+      serverSelectionTimeoutMS: 5000, // Fail fast if unreachable (5s)
+      autoIndex: true,
     });
     lastConnectionError = null;
     console.log(`[MongoDB] Connected successfully to host: ${conn.connection.host}, database: ${conn.connection.name}`);
