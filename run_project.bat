@@ -4,16 +4,6 @@ echo ========================================================
 echo  Starting Web Form Input Validation Engine (Regex & DFA)
 echo ========================================================
 echo.
-cd /d "%~dp0"
-echo Starting MongoDB with Docker Compose...
-docker compose up -d --wait mongo
-if errorlevel 1 (
-    echo.
-    echo Could not start MongoDB. Make sure Docker Desktop is installed and running.
-    pause
-    exit /b 1
-)
-
 echo Starting Backend Server on port 5001...
 start "Validation Engine - Backend" cmd /k "cd /d "%~dp0server" && set PORT=5001 && set NODE_ENV=development && "C:\Program Files\nodejs\node.exe" server.js"
 

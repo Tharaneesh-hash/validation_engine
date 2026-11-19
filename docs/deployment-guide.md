@@ -26,14 +26,6 @@ docker compose up --build -d
   docker compose down
   ```
 
-## Local Development
-
-On Windows, run `run_project.bat` from the repository folder. It starts the MongoDB
-container with Docker Compose, then launches the backend on port `5001` and the
-Vite frontend on port `5173`. Open `http://localhost:5173`. Docker Desktop must be
-installed and running; the launcher waits for MongoDB to become healthy before
-starting the backend.
-
 ---
 
 ## 2. Deploying to Cloud Providers (e.g., Render, Railway)

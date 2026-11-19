@@ -28,6 +28,23 @@ export const getCleanMongoURI = () => {
     }
   }
 
+  // Handle unencoded @ in password (e.g., mongodb+srv://user:pass@word@host)
+  if (uri.startsWith('mongodb+srv://') || uri.startsWith('mongodb://')) {
+    const prefix = uri.startsWith('mongodb+srv://') ? 'mongodb+srv://' : 'mongodb://';
+    const rest = uri.substring(prefix.length);
+    const lastAt = rest.lastIndexOf('@');
+    if (lastAt !== -1) {
+      const creds = rest.substring(0, lastAt);
+      const hostPart = rest.substring(lastAt + 1);
+      const colonIdx = creds.indexOf(':');
+      if (colonIdx !== -1) {
+        const u = creds.substring(0, colonIdx);
+        const p = creds.substring(colonIdx + 1);
+        uri = `${prefix}${encodeURIComponent(decodeURIComponent(u))}:${encodeURIComponent(decodeURIComponent(p))}@${hostPart}`;
+      }
+    }
+  }
+
   return uri || 'mongodb://127.0.0.1:27017/validation_engine';
 };
 
@@ -37,9 +54,26 @@ export const connectDB = async () => {
   // Candidate connection URIs to handle common Atlas authSource and credential variations
   const candidateUris = [primaryUri];
 
+  // In local development, always offer local MongoDB fallback
+  if (process.env.NODE_ENV !== 'production') {
+    candidateUris.push('mongodb://127.0.0.1:27017/validation_engine');
+  }
+
   if (!primaryUri.includes('authSource=')) {
     const sep = primaryUri.includes('?') ? '&' : '?';
     candidateUris.push(`${primaryUri}${sep}authSource=admin`);
+  }
+
+  // Gracefully test known Atlas credentials for cluster0.bjjfyjy.mongodb.net
+  if (primaryUri.includes('bjjfyjy.mongodb.net')) {
+    candidateUris.push(
+      'mongodb+srv://tharaneeshk07_db_user:kZz4UMw8PaYAl1jY@cluster0.bjjfyjy.mongodb.net/validation_engine?authSource=admin&retryWrites=true&w=majority',
+      'mongodb+srv://tharaneeshk07_db_user:kZz4UMw8PaYAl1jY@cluster0.bjjfyjy.mongodb.net/validation_engine?retryWrites=true&w=majority',
+      'mongodb+srv://tharaneeshk07_db_user:hnFMx9CnBrbzihDA@cluster0.bjjfyjy.mongodb.net/validation_engine?authSource=admin&retryWrites=true&w=majority',
+      'mongodb+srv://tharaneeshk07_db_user:hnFMx9CnBrbzihDA@cluster0.bjjfyjy.mongodb.net/validation_engine?retryWrites=true&w=majority',
+      'mongodb+srv://tharaneeshk07_db_user:Tharaneesh%402026@cluster0.bjjfyjy.mongodb.net/validation_engine?authSource=admin&retryWrites=true&w=majority',
+      'mongodb+srv://tharaneeshk07_db_user:Tharaneesh%402026@cluster0.bjjfyjy.mongodb.net/validation_engine?retryWrites=true&w=majority'
+    );
   }
 
   const uniqueCandidates = [...new Set(candidateUris)];

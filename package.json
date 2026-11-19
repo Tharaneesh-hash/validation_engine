@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,magenta\" \"npm run server\" \"npm run client\"",
     "server": "npm --prefix server run dev",
     "client": "npm --prefix client run dev",
     "start": "npm --prefix server start",
     "build": "npm --prefix client run build",
     "test": "npm --prefix server test -- --pool=forks"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }
