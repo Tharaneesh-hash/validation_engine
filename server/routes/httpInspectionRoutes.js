@@ -19,11 +19,17 @@ const router = express.Router();
 
 // HTTP Header & Cookie Inspection routes
 router.post('/http/inspect-request', inspectRequestHeaders);
+router.post('/http/inspect/request', inspectRequestHeaders);
 router.post('/http/inspect-response', inspectResponseHeaders);
+router.post('/http/inspect/response', inspectResponseHeaders);
 router.post('/http/validate-header', validateHeaderFormat);
+router.post('/http/validate/header', validateHeaderFormat);
 router.post('/http/validate-cookie', validateCookie);
+router.post('/http/validate/cookie', validateCookie);
 router.get('/http/dashboard-stats', getDashboardStats);
+router.get('/http/dashboard/stats', getDashboardStats);
 router.get('/http/security-warnings', getSecurityWarnings);
+router.get('/http/warnings', getSecurityWarnings);
 
 // DFA Session Cookie State Machine routes
 router.post('/sessions/create', createSession);
