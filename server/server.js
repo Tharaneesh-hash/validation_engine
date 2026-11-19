@@ -35,15 +35,16 @@ import ruleRoutes from './routes/ruleRoutes.js';
 import httpInspectionRoutes from './routes/httpInspectionRoutes.js';
 
 // ------------------------------------------------------------------
-// Load environment variables (Vercel injects them automatically)
-// ------------------------------------------------------------------
-dotenv.config();
-
-// ------------------------------------------------------------------
 // Basic path helpers (needed for serving the static client in prod)
 // ------------------------------------------------------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// ------------------------------------------------------------------
+// Load environment variables (Vercel injects them automatically)
+// ------------------------------------------------------------------
+dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config();
 
 // ------------------------------------------------------------------
 // Express app setup
