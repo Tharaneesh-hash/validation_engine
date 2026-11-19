@@ -12,6 +12,10 @@ import DfaVisualizer from './pages/DfaVisualizer';
 import ValidationHistory from './pages/ValidationHistory';
 import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import NetworkMonitoring from './pages/NetworkMonitoring';
+import HttpHeaderInspector from './pages/HttpHeaderInspector';
+import CookieInspector from './pages/CookieInspector';
+import SessionCookieDFA from './pages/SessionCookieDFA';
+import SecurityMonitoringDashboard from './pages/SecurityMonitoringDashboard';
 import api from './services/api';
 
 export default function App() {
@@ -44,6 +48,14 @@ export default function App() {
     switch (activeTab) {
       case 'dashboard':
         return <HomeDashboard setActiveTab={setActiveTab} healthData={healthData} />;
+      case 'security-dashboard':
+        return <SecurityMonitoringDashboard />;
+      case 'http-headers':
+        return <HttpHeaderInspector />;
+      case 'cookie-security':
+        return <CookieInspector />;
+      case 'session-dfa':
+        return <SessionCookieDFA />;
       case 'form':
         return <WebFormValidation />;
       case 'playground':

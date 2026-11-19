@@ -11,11 +11,18 @@ import {
   History,
   BarChart3,
   Activity,
-  Layers
+  Layers,
+  ShieldAlert,
+  ArrowRightLeft,
+  Cookie
 } from 'lucide-react';
 
 export const NAV_ITEMS = [
   { id: 'dashboard', label: 'Home Dashboard', icon: LayoutDashboard, category: 'Overview' },
+  { id: 'security-dashboard', label: 'Security Dashboard', icon: ShieldAlert, category: 'HTTP & Cookie Security' },
+  { id: 'http-headers', label: 'HTTP Header Inspector', icon: ArrowRightLeft, category: 'HTTP & Cookie Security' },
+  { id: 'cookie-security', label: 'Cookie Security Engine', icon: Cookie, category: 'HTTP & Cookie Security' },
+  { id: 'session-dfa', label: 'Session Cookie DFA', icon: GitFork, category: 'HTTP & Cookie Security' },
   { id: 'form', label: 'Web Form Validation', icon: CheckSquare, category: 'Validation Engine' },
   { id: 'playground', label: 'Regex Playground', icon: Terminal, category: 'Validation Engine' },
   { id: 'nfa', label: 'Regex → NFA (Thompson)', icon: GitFork, category: 'FLAT Automata' },
@@ -30,7 +37,14 @@ export const NAV_ITEMS = [
 
 export default function Sidebar({ activeTab, setActiveTab }) {
   // Group navigation items by category
-  const categories = ['Overview', 'Validation Engine', 'FLAT Automata', 'Persistence & Analytics', 'Computer Networks'];
+  const categories = [
+    'Overview',
+    'HTTP & Cookie Security',
+    'Validation Engine',
+    'FLAT Automata',
+    'Persistence & Analytics',
+    'Computer Networks'
+  ];
 
   return (
     <aside style={{

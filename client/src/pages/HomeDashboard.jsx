@@ -12,11 +12,46 @@ import {
   ShieldCheck, 
   Sparkles,
   Zap,
-  BookOpen
+  BookOpen,
+  ShieldAlert,
+  ArrowRightLeft,
+  Cookie
 } from 'lucide-react';
 
 export default function HomeDashboard({ setActiveTab, healthData }) {
   const quickModules = [
+    {
+      id: 'security-dashboard',
+      title: 'Security Monitoring Dashboard',
+      desc: 'Real-time telemetry of HTTP requests, response headers, cookie compliance, and DFA state transitions.',
+      icon: ShieldAlert,
+      color: '#dc2626',
+      badge: 'Security Module'
+    },
+    {
+      id: 'http-headers',
+      title: 'HTTP Header Inspector',
+      desc: 'Inspect, validate RFC 7230/7231 request and response headers, audit security policies (HSTS, CSP, XFO).',
+      icon: ArrowRightLeft,
+      color: '#0284c7',
+      badge: 'RFC 7230/7231'
+    },
+    {
+      id: 'cookie-security',
+      title: 'Cookie Security Engine',
+      desc: 'Validate RFC 6265 Cookie and Set-Cookie attributes, flags (HttpOnly, Secure, SameSite) and expiry.',
+      icon: Cookie,
+      color: '#f59e0b',
+      badge: 'RFC 6265'
+    },
+    {
+      id: 'session-dfa',
+      title: 'Session Cookie DFA State Machine',
+      desc: 'Formal FSM tracking session lifecycles across ISSUED, ACTIVE, EXPIRED, and REVOKED with strict invariants.',
+      icon: GitFork,
+      color: '#10b981',
+      badge: 'FLAT Session DFA'
+    },
     {
       id: 'form',
       title: 'Web Form Validation',

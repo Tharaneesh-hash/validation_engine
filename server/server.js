@@ -21,6 +21,7 @@ import { fileURLToPath, pathToFileURL } from 'url';
 // DB & middleware imports
 import { connectDB } from './utils/db.js';
 import { networkTrackerMiddleware } from './middleware/networkTracker.js';
+import { httpInspectorMiddleware } from './middleware/httpInspectorMiddleware.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 
 // Route imports
@@ -31,6 +32,7 @@ import automataRoutes from './routes/automataRoutes.js';
 import historyRoutes from './routes/historyRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import ruleRoutes from './routes/ruleRoutes.js';
+import httpInspectionRoutes from './routes/httpInspectionRoutes.js';
 
 // ------------------------------------------------------------------
 // Load environment variables (Vercel injects them automatically)
@@ -86,6 +88,7 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
 }
 app.use(networkTrackerMiddleware);
+app.use(httpInspectorMiddleware);
 
 // Vercel imports this module instead of running the local startup block below.
 // Connect lazily for routes that use MongoDB, while preserving the in-memory
@@ -122,7 +125,7 @@ const ensureDatabaseConnection = async (req, res, next) => {
 };
 
 app.use(
-  ['/api/health', '/api/validate', '/api/history', '/api/analytics', '/api/rules'],
+  ['/api/health', '/api/validate', '/api/history', '/api/analytics', '/api/rules', '/api/http', '/api/sessions'],
   ensureDatabaseConnection
 );
 
@@ -134,6 +137,7 @@ app.use('/api/automata', automataRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/rules', ruleRoutes);
+app.use('/api', httpInspectionRoutes);
 
 // 5️⃣ Serve static client assets when running in production
 const distPath = path.join(__dirname, '../client/dist');
